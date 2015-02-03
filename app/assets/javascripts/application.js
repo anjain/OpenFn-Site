@@ -30,6 +30,7 @@
 //= require ng-rails-csrf
 //= require_tree ./support
 
+//= require_tree ./openfn
 //= require_tree ./the_bridge_ng
 
 Array.prototype.diff = function(a) {
