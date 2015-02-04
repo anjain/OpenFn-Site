@@ -11,13 +11,21 @@
     <hr class="light">
     <hr class="dark">
     <div class="container">
+      <settings-bar mapping="mappingCtrl.mapping"></settings-bar>
+      <product-selector mapping="mappingCtrl.mapping"></product-selector>
+
       <div class="row">
-        <div class="col-md-2">
-          <div class="form-group">
-            <input class="form-control" id="mappingName" placeholder="Mapping name" ng-model="mappingCtrl.mapping.name">
-          </div>
+        <div class="col-md-5">
+          <source-criteria mapping="mappingCtrl.mapping"></source-criteria>
+          
+        </div>
+        
+        <div class="col-md-5 col-md-offset-2">
+          <destination-criteria mapping="mappingCtrl.mapping"></destination-criteria>
+          
         </div>
       </div>
     </div>
+
   </div>
 </div>

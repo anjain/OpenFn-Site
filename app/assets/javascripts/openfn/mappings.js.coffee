@@ -15,6 +15,6 @@ OpenFn.Mappings.config [
       resolve:
         mappingInstance: ($q,Mapping) ->
           $q (resolve) ->
-            resolve new Mapping
+            resolve(new Mapping)
 ]
 
