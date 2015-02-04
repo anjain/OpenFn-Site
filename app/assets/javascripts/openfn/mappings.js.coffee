@@ -13,8 +13,8 @@ OpenFn.Mappings.config [
       templateUrl: '/templates/mappings/new.html'
       controller: 'NewMappingCtrl as mappingCtrl'
       resolve:
-        mappingInstance: ($q,Mapping) ->
+        mappingId: ($q) ->
           $q (resolve) ->
-            resolve(new Mapping)
+            resolve(null)
 ]
 

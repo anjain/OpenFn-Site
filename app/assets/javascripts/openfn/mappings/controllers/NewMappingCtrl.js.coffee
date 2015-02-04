@@ -1,9 +1,30 @@
 'use strict'
 
 OpenFn.Mappings.controller 'NewMappingCtrl', [
-  'mappingInstance',(mapping) ->
+  'mappingId',
+  'Mapping'
+  '$q',
+  (mappingId,Mapping,$q) ->
 
-    this.mapping = mapping
-    this.message = "Hello"
+    self = this
+    fetchMapping = (id) ->
+      $q (resolve,reject) ->
+        console.log 2
+        self.mapping = new Mapping
+        reject(false)
+
+    showLoading = (resolve) ->
+      console.log 1
+      self.loading = true
+      resolve(true)
+      
+    $q showLoading
+    .then -> fetchMapping(mappingId)
+    .then (resolve) ->
+      self.loading = false
+    , (reason) =>
+      console.log 3
+
+
 
 ]
