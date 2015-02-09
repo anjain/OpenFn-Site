@@ -1,38 +1,34 @@
 'use strict'
 
 OpenFn.Mappings.factory 'MappingViewModel', [
-  '$resource','$http', ($resource,$http) ->
+  '$resource','$http','$q', ($resource,$http,$q) ->
 
     class Mapping
 
-      constructor: (id) ->
-        self = this
+      constructor: (id, callbacks={}) ->
 
-        @callbacks = []
-
-        Object.defineProperty @, 'onChange',
-          set: (callback) ->
-            @callbacks['onChange'] = callback
+        @callbacks = callbacks
 
         @attrs = {
-          id: null
+          id: id || null
           name: ""
           enabled: false
         }
 
         @state = {
-          new: true
+          new: id? ? false : true
           loading: true
         }
 
-          
-
-        properties = [
+        @initializeProps [
           'id'
           'name'
           'active'
           'enabled'
         ]
+
+
+      initializeProps: (properties) ->
 
         for property in properties
           do (property) =>
@@ -46,26 +42,23 @@ OpenFn.Mappings.factory 'MappingViewModel', [
               configurable: false
             }
 
-        @id = id
-
-        @fetchFromServer() if @id
-
-
       emit: (evt) ->
         console.log "Called #{evt}"
         @callbacks[evt](this)
 
-      save: () ->
-        new Mapping.resource(@resourceAttrs()).$save()
-
       updateFromServer: (resp) ->
+        # TODO use api v1
+        angular.extend(@.attrs, resp)
         console.log resp
 
       fetchFromServer: () ->
-        $http.get("/mappings/#{@id}.json").success (data) ->
-          self.updateFromServer(data)
+        @state.loading = true
+        $http.get("/mappings/#{@id}.json").success (data) =>
+          @updateFromServer(data.mapping)
+          @state.loading = false
         .error () ->
           console.error arguments
+          @state.loading = false
       
       resourceAttrs: () ->
         {

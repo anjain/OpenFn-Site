@@ -9,6 +9,18 @@ OpenFn.Mappings.controller 'MappingViewCtrl', [
 
     self = this
 
+    self.state = {
+      new: true,
+      loading: true
+    }
+
+    self.mapping = {
+      name: "",
+      id: "",
+      active: true,
+      enabled: true
+    }
+
     self.onMappingChange = (mapping) ->
       mapping.save()
         .then (resp) ->
@@ -36,13 +48,6 @@ OpenFn.Mappings.controller 'MappingViewCtrl', [
     # Set up a new MappingViewModel
     #   fetch it if you have an ID
     #   blank one with defaults if you don't
-    $q (resolve,reject) ->
-      showLoading()
-      fetchMapping(mappingId)
-    .then cancelLoading
-    , (reason) =>
-      console.log 3
-
 
     return this
 
