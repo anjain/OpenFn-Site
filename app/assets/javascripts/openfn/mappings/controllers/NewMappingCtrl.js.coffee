@@ -4,27 +4,39 @@ OpenFn.Mappings.controller 'NewMappingCtrl', [
   'mappingId',
   'Mapping'
   '$q',
-  (mappingId,Mapping,$q) ->
+  '$scope',
+  (mappingId,Mapping,$q,$scope) ->
 
     self = this
+
+    self.onMappingChange = (mapping) ->
+      console.log mapping
+
     fetchMapping = (id) ->
       $q (resolve,reject) ->
         console.log 2
-        self.mapping = new Mapping
-        reject(false)
+        setTimeout ->
+          self.mapping = new Mapping(id)
+          self.mapping.onChange = self.mappingChanged
+          $scope.$apply()
+          resolve(true)
+        , 3000
 
-    showLoading = (resolve) ->
-      console.log 1
+    showLoading = () ->
       self.loading = true
-      resolve(true)
-      
-    $q showLoading
-    .then -> fetchMapping(mappingId)
-    .then (resolve) ->
+
+    cancelLoading = () ->
       self.loading = false
+      
+    $q (resolve,reject) ->
+      showLoading()
+      fetchMapping(mappingId)
+    .then cancelLoading
     , (reason) =>
       console.log 3
 
+
+    return this
 
 
 ]
