@@ -1,45 +1,79 @@
 'use strict'
 
-OpenFn.Mappings.factory 'Mapping', ['$resource', ($resource) ->
+OpenFn.Mappings.factory 'MappingViewModel', [
+  '$resource','$http', ($resource,$http) ->
 
-  class Mapping
-    constructor: ->
+    class Mapping
 
-      @callbacks = []
+      constructor: (id) ->
+        self = this
 
-      @attrs = {
-        name: "Hello from the factory"
-        enabled: true
-      }
+        @callbacks = []
 
-      @service = $resource "/mappings/:id", {id: "@id"},
-        update:
-          method: "PUT"
+        Object.defineProperty @, 'onChange',
+          set: (callback) ->
+            @callbacks['onChange'] = callback
+
+        @attrs = {
+          id: null
+          name: ""
+          enabled: false
+        }
+
+        @state = {
+          new: true
+          loading: true
+        }
+
           
 
-      Object.defineProperty @, 'onChange',
-        set: (callback) -> @callbacks['onChange'] = callback
-        
+        properties = [
+          'id'
+          'name'
+          'active'
+          'enabled'
+        ]
 
-      Object.defineProperty @, 'name', {
-        get: -> @attrs.name
-        set: (newname) -> @attrs.name = newname
-        enumerable: true
-        configurable: false
-      }
+        for property in properties
+          do (property) =>
+            Object.defineProperty @, property, {
+              get: -> @attrs[property]
+              set: (newValue) ->
+                @attrs[property] = newValue
+                @emit('onChange')
+                @attrs[property]
+              enumerable: true
+              configurable: false
+            }
 
-      Object.defineProperty @, 'enabled', {
-        get: -> @attrs.enabled
-        set: (enabled) ->
-          console.log "mapping changed!"
+        @id = id
 
-          @attrs.enabled = enabled
-          @emit('onChange')
-        enumerable: true
-        configurable: false
-      }
+        @fetchFromServer() if @id
 
-    emit: (evt) ->
-      @callbacks[evt](this)
-    
+
+      emit: (evt) ->
+        console.log "Called #{evt}"
+        @callbacks[evt](this)
+
+      save: () ->
+        new Mapping.resource(@resourceAttrs()).$save()
+
+      updateFromServer: (resp) ->
+        console.log resp
+
+      fetchFromServer: () ->
+        $http.get("/mappings/#{@id}.json").success (data) ->
+          self.updateFromServer(data)
+        .error () ->
+          console.error arguments
+      
+      resourceAttrs: () ->
+        {
+          id: @attrs.id,
+          mapping: {
+            name: @attrs.name
+            enabled: @attrs.enabled
+            active: @attrs.active
+          }
+        }
 ]

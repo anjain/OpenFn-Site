@@ -1,8 +1,8 @@
 'use strict'
 
-OpenFn.Mappings.controller 'NewMappingCtrl', [
+OpenFn.Mappings.controller 'MappingViewCtrl', [
   'mappingId',
-  'Mapping'
+  'MappingViewModel'
   '$q',
   '$scope',
   (mappingId,Mapping,$q,$scope) ->
@@ -10,14 +10,18 @@ OpenFn.Mappings.controller 'NewMappingCtrl', [
     self = this
 
     self.onMappingChange = (mapping) ->
-      console.log mapping
+      mapping.save()
+        .then (resp) ->
+          console.log resp
+        .catch (resp) ->
+          console.log resp
 
     fetchMapping = (id) ->
       $q (resolve,reject) ->
         console.log 2
         setTimeout ->
           self.mapping = new Mapping(id)
-          self.mapping.onChange = self.mappingChanged
+          self.mapping.onChange = self.onMappingChange
           $scope.$apply()
           resolve(true)
         , 3000
@@ -28,6 +32,10 @@ OpenFn.Mappings.controller 'NewMappingCtrl', [
     cancelLoading = () ->
       self.loading = false
       
+    # Bootstrap the mapping
+    # Set up a new MappingViewModel
+    #   fetch it if you have an ID
+    #   blank one with defaults if you don't
     $q (resolve,reject) ->
       showLoading()
       fetchMapping(mappingId)
@@ -37,6 +45,5 @@ OpenFn.Mappings.controller 'NewMappingCtrl', [
 
 
     return this
-
 
 ]

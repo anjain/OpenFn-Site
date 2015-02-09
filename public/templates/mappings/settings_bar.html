@@ -12,28 +12,35 @@
         <input type="checkbox" ng-model="mapping.enabled">Enabled?</label>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="input-group">
-      <input type="text" class="form-control" placeholder="Manual Test (0-10)">
-      <span class="input-group-btn">
-        <button class="btn btn-default" type="button">Go!</button>
-      </span>
+  <div ng-hide="!mapping || mapping.state.new">
+    
+    <div class="col-md-3">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Manual Test (0-10)">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button">Go!</button>
+        </span>
+      </div>
     </div>
-  </div>
-  <div class="col-md-1">
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" ng-model="mapping.auto">Auto?</label>
+    <div class="col-md-1">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="mapping.auto">Auto?</label>
+      </div>
     </div>
+    <div class="col-md-1">
+      <a class="btn btn-default">Clone</a>
+    </div>
+    <div class="col-md-1">
+      <a class="btn btn-warning">Reset</a>
+    </div>
+    <div class="col-md-1">
+      <a class="btn btn-danger">Destroy</a>
+      
+    </div>
+
   </div>
-  <div class="col-md-1">
-    <a class="btn btn-default">Clone</a>
-  </div>
-  <div class="col-md-1">
-    <a class="btn btn-warning">Reset</a>
-  </div>
-  <div class="col-md-1">
-    <a class="btn btn-danger">Destroy</a>
+  <div class="pull-right">
     <i class="fa fa-refresh fa-spin" ng-show="mappingCtrl.loading"></i>
   </div>
 </div>
