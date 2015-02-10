@@ -1,54 +1,44 @@
 'use strict'
 
-OpenFn.Mappings.controller 'MappingViewCtrl', [
-  'mappingId',
-  'MappingViewModel'
-  '$q',
-  '$scope',
-  (mappingId,Mapping,$q,$scope) ->
+OpenFn.Mappings.controller 'MappingViewCtrl',
+  (mappingId,MappingViewModel,$q,$scope,$modal) ->
 
     self = this
 
-    self.state = {
-      new: true,
-      loading: true
+    self.ui = {
+      initializing: true
     }
 
-    self.mapping = {
-      name: "",
-      id: "",
-      active: true,
-      enabled: true
-    }
+    $q (resolve,reject) ->
+      # Hand over mappingId to View model and bind callbacks.
+      self.mapping = new MappingViewModel(mappingId,{
 
-    self.onMappingChange = (mapping) ->
-      mapping.save()
-        .then (resp) ->
-          console.log resp
-        .catch (resp) ->
-          console.log resp
-
-    fetchMapping = (id) ->
-      $q (resolve,reject) ->
-        console.log 2
-        setTimeout ->
-          self.mapping = new Mapping(id)
-          self.mapping.onChange = self.onMappingChange
+        # Just in case for now, props seem to update quickly.
+        onUpdate: ->
           $scope.$apply()
-          resolve(true)
-        , 3000
+        onChange: ->
+          console.log "got change from viewmodel:", arguments
+        # Open modal when we get an error
+        onError: (mapping,e) ->
+          $modal.open
+            templateUrl: "/templates/errorModal.html"
+            controller: "ErrorModalCtrl"
+            size: "md"
+            resolve:
+              message: -> e
 
-    showLoading = () ->
-      self.loading = true
-
-    cancelLoading = () ->
-      self.loading = false
-      
-    # Bootstrap the mapping
-    # Set up a new MappingViewModel
-    #   fetch it if you have an ID
-    #   blank one with defaults if you don't
+      })
+      resolve(true)
+    .then ->
+      self.ui.initializing = false
+    .catch (reason) ->
+      console.error reason
 
     return this
 
-]
+.controller 'ErrorModalCtrl', ($modalInstance,$scope,message) ->
+
+  $scope.message = message
+
+  $scope.ok = ->
+    $modalInstance.close()

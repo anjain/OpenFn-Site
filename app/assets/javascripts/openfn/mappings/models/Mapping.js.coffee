@@ -5,7 +5,7 @@ OpenFn.Mappings.factory 'MappingViewModel', [
 
     class Mapping
 
-      constructor: (id, callbacks={}) ->
+      constructor: (id,callbacks) ->
 
         @callbacks = callbacks
 
@@ -16,8 +16,8 @@ OpenFn.Mappings.factory 'MappingViewModel', [
         }
 
         @state = {
-          new: id? ? false : true
-          loading: true
+          new: !id
+          loading: false
         }
 
         @initializeProps [
@@ -26,7 +26,6 @@ OpenFn.Mappings.factory 'MappingViewModel', [
           'active'
           'enabled'
         ]
-
 
       initializeProps: (properties) ->
 
@@ -42,9 +41,9 @@ OpenFn.Mappings.factory 'MappingViewModel', [
               configurable: false
             }
 
-      emit: (evt) ->
+      emit: (evt,payload) ->
         console.log "Called #{evt}"
-        @callbacks[evt](this)
+        @callbacks[evt](this,payload)
 
       updateFromServer: (resp) ->
         # TODO use api v1
@@ -59,6 +58,7 @@ OpenFn.Mappings.factory 'MappingViewModel', [
         .error () ->
           console.error arguments
           @state.loading = false
+
       
       resourceAttrs: () ->
         {
@@ -69,4 +69,27 @@ OpenFn.Mappings.factory 'MappingViewModel', [
             active: @attrs.active
           }
         }
+
+      create: ->
+        $q (resolve,reject) =>
+          @state.saving = true
+          $http.post("/mappings", @attrs).success (data) =>
+            angular.extend(@attrs, data.mapping)
+            @state.new = false
+            resolve(true)
+          .error (data, status, headers, config) ->
+            if status == 401
+              reject("You need to be logged in to create a mapping.")
+            else
+              reject(status)
+
+        .then =>
+          @state.saving = false
+        .then =>
+          @emit 'onServerUpdate'
+        .catch (reason) =>
+          @state.saving = false
+          @emit 'onError', reason
+          console.log reason
+
 ]

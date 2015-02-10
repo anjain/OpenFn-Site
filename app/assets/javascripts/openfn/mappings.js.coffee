@@ -1,6 +1,6 @@
 'use strict'
 
-OpenFn.Mappings = angular.module 'OpenFn.Mappings', []
+OpenFn.Mappings = angular.module 'OpenFn.Mappings', ['ui.bootstrap']
 
 OpenFn.Mappings.config [
   '$routeProvider',
