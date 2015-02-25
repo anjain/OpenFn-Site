@@ -11,7 +11,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150224120606) do
+
+ActiveRecord::Schema.define(version: 20150222013326) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -136,6 +137,8 @@ ActiveRecord::Schema.define(version: 20150224120606) do
     t.datetime "updated_at"
   end
 
+  add_index "mappings", ["project_id"], name: "index_mappings_on_project_id", using: :btree
+
   create_table "odk_sf_legacy_credentials", force: true do |t|
     t.integer  "user_id"
     t.datetime "created_at"
@@ -241,7 +244,10 @@ ActiveRecord::Schema.define(version: 20150224120606) do
     t.datetime "updated_at"
     t.string   "stripe_customer_token"
     t.string   "stripe_subscription_token"
+<<<<<<< HEAD
     t.string   "stripe_current_period_end"
+=======
+>>>>>>> upstream/develop
   end
 
   add_index "organizations", ["plan_id"], name: "index_organizations_on_plan_id", using: :btree
@@ -284,6 +290,7 @@ ActiveRecord::Schema.define(version: 20150224120606) do
 
   add_index "projects", ["organization_id"], name: "index_projects_on_organization_id", using: :btree
 
+<<<<<<< HEAD
   create_table "salesforce_fields", force: true do |t|
     t.integer  "mapping_id"
     t.string   "object_name"
@@ -295,8 +302,10 @@ ActiveRecord::Schema.define(version: 20150224120606) do
     t.boolean  "perform_lookups", default: false
   end
 
+=======
+>>>>>>> upstream/develop
   create_table "submission_records", force: true do |t|
-    t.integer  "integration_id"
+    t.integer  "mapping_id"
     t.text     "raw_source_payload"
     t.hstore   "source_payload"
     t.hstore   "destination_payload"
@@ -347,11 +356,21 @@ ActiveRecord::Schema.define(version: 20150224120606) do
     t.string   "tier"
     t.integer  "plan_id"
     t.integer  "organization_id"
+<<<<<<< HEAD
     t.string   "organisation"
+=======
+>>>>>>> upstream/develop
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["organization_id"], name: "index_users_on_organization_id", using: :btree
   add_index "users", ["plan_id"], name: "index_users_on_plan_id", using: :btree
+
+  create_table "votes", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "product_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

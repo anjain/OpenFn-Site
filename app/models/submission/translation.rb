@@ -4,11 +4,12 @@ class Submission::Translation
 
   include Sidekiq::Worker
   
-  def perform(submission)
-    translation = Mapping::Translation.new(submission.source_payload, submission.integration.mappings)
-    submission.destination_payload = translation.result
-    submission.save!
+  def perform(record_id)
+    record = Submission::Record.find(record_id)
+    translation = Mapping::Translation.new(record.source_payload, record.mapping_id)
+    record.destination_payload = translation.result
+    record.save!
     
-    Sidekiq::Client.enqueue(Submission::PayloadDecoding, submission)
+    Sidekiq::Client.enqueue(Submission::PayloadDecoding, record.id)
   end
 end
